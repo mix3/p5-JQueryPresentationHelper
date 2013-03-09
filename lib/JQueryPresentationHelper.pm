@@ -231,7 +231,7 @@ Set your header
 
 Render html, if run perl command. Boot local server, if run plackup command.
 
-head1 SEE ALSO
+=head1 SEE ALSO
 
 L<http://code.google.com/p/jquery-presentation/>
 
