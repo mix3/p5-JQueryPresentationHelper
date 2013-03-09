@@ -1,0 +1,84 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use utf8;
+
+use File::Basename;
+use File::Path;
+use LWP::Simple;
+
+my $ua = LWP::UserAgent->new();
+
+my $asset = {
+    'css/common.css'            => 'http://jquery-presentation.googlecode.com/svn/trunk/css/common.css',
+    'js/jquery.js'              => 'http://jquery-presentation.googlecode.com/svn/trunk/js/jquery.js',
+    'js/jquery.presentation.js' => 'http://jquery-presentation.googlecode.com/svn/trunk/js/jquery.presentation.js',
+    'fonts/symbol-signs.ttf'    => 'http://jquery-presentation.googlecode.com/svn/trunk/fonts/symbol-signs.ttf',
+};
+
+die "require path" unless ($ARGV[0]);
+
+(my $base = $ARGV[0]) =~ s/\/+$//;
+
+die "exists: $base/" if (-d $base);
+
+sub main {
+    asset();
+    script();
+}
+
+main();
+
+exit;
+
+sub asset {
+    for my $path (keys %$asset) {
+        my $_path = "$base/$path";
+        mkpath(dirname($_path));
+        mirror($asset->{$path}, "$_path");
+        print "$_path\n";
+    }
+}
+
+sub script {
+    my $path = "$base/rename_me.pl";
+    open my $fh, '>:utf8', $path;
+    print {$fh} <<'...';
+use JQueryPresentationHelper;
+
+# write content
+
+# top   q{ markdown ... }
+# plain q{ markdown ... }
+# shout q{ markdown ... }
+# none  q{ markdown ... }
+
+top q{
+# PresentationTitle
+
+author, etc...
+};
+
+plain q{
+## SectionTitle
+
+* Content
+ * Content-1
+ * Content-2
+ * Content-3
+};
+
+shout q{
+shout! shout!! shout!!!
+};
+
+none escape q{
+<div>escape!</div>
+};
+
+run();
+...
+    close $fh;
+    print "$path\n";
+}
